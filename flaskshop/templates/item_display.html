@@ -1,0 +1,51 @@
+{% extends "layout.html"%}
+{% block content %}
+<style>body{
+  color:#747880!important
+}
+</style>
+  {% for product in products %}
+    {% if product.name == name %}
+
+      <img src="/static/img/{{product.image_file}}.jpg">
+        <br><br>
+        <br>NAME: {{product.name}}
+        <br>COLOUR: {{product.colour}}
+        <br>BRAND: <a href="/{{product.brand}}">{{product.brand| replace("-", " ")}}</a>
+        <br>SIZE: {{product.size}}
+        <br>PRICE: £{{product.price}}
+        <br>CATEGORY: <a href="/{{product.clothing_category}}">{{product.clothing_category}}</a>
+        <br>SUB-CATEGORY: <a href="/{{product.clothing_category}}/{{product.sub_category}}">{{product.sub_category}}</a>
+        <br>GENDER: <a href="/{{product.gender | lower}}">{{product.gender}}</a>
+        <br><br>
+
+        <div class="container">
+          <div class="dropdown">
+            <form action="" method="POST" name="boards_list">
+              <table class="table is-striped">
+                {% for board in boards %}
+                <tr>
+                  <td>
+                    <label class="checkbox">
+                      <input type="checkbox" name="board_titles" value="{{board.title}}"/>
+                    </label>
+                    <a href="#">{{board.title}}</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </table>
+
+              <div class="field is-grouped">
+                <div class="control">
+                  {% if current_user.is_authenticated %}
+                  <button type="button "class="btn btn-secondary">Add To Favs</button>
+                  {% endif %}
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+    {% endif %}
+  {% endfor %}
+{% endblock %}

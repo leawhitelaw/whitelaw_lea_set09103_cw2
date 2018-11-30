@@ -1,0 +1,6 @@
+{% extends "layout.html"%}
+{% block content %}
+{% for item in clothing%}
+    <li><a href="/{{item.brand}}/{{item.name}}">{{item.name}}</a></li>
+  {% endfor %}
+{% endblock %}
