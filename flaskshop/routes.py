@@ -87,20 +87,25 @@ def product_details(brand=None, name=None):
             flash('Create a board in favourites to add a favourite!','info')
         else:
             if request.method =="POST":
-                return search_bar()
                 f_b_titles = request.form.getlist("board_titles")
-                clothing = Clothing.query.filter_by(name = name).first()
-                userid = int(current_user.id)
-                clothingid = int(clothing.id)
-                for b in boards:
-                    for board in f_b_titles:
-                        if b.title == board:
-                            fav_relationship = Favourites_relationship(user_id = userid, clothing_id = clothingid, favs_board = b)
-                            db.session.add(fav_relationship)
-                            db.session.commit()
-                            flash('Added favourite to mood board!', 'success')
-                        #else:
-                            #flash('Could not add to board'.format(), 'danger')
+                titles = request.form.get("board_titles")
+                search_bar_submit = request.form.get("search_button")
+                if search_bar_submit:### return search bar if search
+                    return search_bar()
+                if not titles or not f_b_titles and not search_bar_submit:### error handling for favourites button
+                    flash('Select board to add to, or create a board in favourites!', 'danger')
+                    return search_bar()
+                elif titles:
+                    clothing = Clothing.query.filter_by(name = name).first()
+                    userid = int(current_user.id)
+                    clothingid = int(clothing.id)
+                    for b in boards:
+                        for board in f_b_titles:
+                            if b.title == board:
+                                fav_relationship = Favourites_relationship(user_id = userid, clothing_id = clothingid, favs_board = b)
+                                db.session.add(fav_relationship)
+                                db.session.commit()
+                                flash('Added favourite to mood board!', 'success')
 
     return render_template('item_display.html', products = products, name=name, brands = brands, categories = categories, boards = boards)
 
@@ -496,11 +501,13 @@ def favourites():
 
 @app.route('/cart', methods=['GET', 'POST'])
 def cart():
+    flash('Oops! Page still under construction', 'danger')
     return render_template('cart.html', title='Cart', form=form, products = products, brands = brands, categories = categories)
 
 @app.route('/checkout', methods=['GET', 'POST'])
 @login_required
 def checkout():
+    flash('Oops! Page still under construction', 'danger')
     return render_template('checkout.html', title='Cart', form=form, products = products, brands = brands, categories = categories)
 
 @app.route('/favourites/<board>', methods=['GET', 'POST'])
@@ -516,10 +523,16 @@ def favourites_sub(board=None):
         for rel in board_rel:
             if b.title == rel.board_title and rel.board_title == board:
                 clothes_int.append(rel.clothing_id)
-    for i in clothes_int:
-        for p in products:
-            if i == p.id:
-                print(p.id)
-                print(i)
-                clothes_list.append(p)
+        for i in clothes_int:
+                for p in products:
+                    if i == p.id:
+                        print(p.id)
+                        print(i)
+                        clothes_list.append(p)
     return render_template('fav_boards.html', products = clothes_list, clothing = clothes_list, brands = brands, categories = categories)
+
+## basic error handling
+@app.errorhandler(404)
+def page_not_found(e):
+    flash('Oops! This page does not exist, check spelling and try again', 'danger')
+    return render_template('home.html', items=products, brands = brands, categories = categories), 404
